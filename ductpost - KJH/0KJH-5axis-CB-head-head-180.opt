@@ -1,0 +1,117 @@
+machine fanucom
+##5축 헤드 / 테이블 
+
+define format ( A B C )
+  metric formats
+  leading zeros = false
+  trailing zeros = true
+  decimal point = true
+  decimal places = 3
+  imperial formats
+  leading zeros = false
+  trailing zeros = true
+  decimal point = true
+  decimal places = 4
+end define
+
+word order = ( + A B C )
+
+block order = true
+
+define keys
+ ## 4th rotary axis normally an azimuth ( Column Rotary )
+ azimuth axis   = C
+ ## 5th rotary axis normally an elevation ( Spindle Rotary )
+ elevation axis = B
+end define
+
+##------------------------------
+##Rotary axes parameter settings
+##------------------------------
+
+spindle azimuth rotation   = true
+spindle elevation rotation = true
+
+azimuth axis parameters   = (0. 0. 0. 0. 0. 1.)
+elevation axis parameters = (0. 0. 0. 0. 1. 0.)
+azimuth centre            = ( 0. 0. 0. )         ##Unusual to have an Offset in the azimuth )
+elevation centre          = ( 0. 0. -180. )      ## Offset of 180.5mm in Z
+
+##Additional parameters
+
+##azimuth axis units = degrees
+##azimuth axis direction = positive
+##elevation axis units = degrees
+##elevation axis direction = positive
+##pcs origin = ( 0 0 0 0 0 0 )
+## (Azimuth Min Max Elev'n Min Max Tol. Moves)
+##rotary axis limits = ( -99999 99999 -99999 99999 0.1 1 )
+##linearise multiaxis moves = true
+
+
+
+
+
+
+define block move rapid
+N ; rapid ; G2 ; G3 ; G6 ; x coord ; y coord ; z coord ; azimuth axis ; elevation axis ; spindle ; tool length ; M1 ; M2
+end define
+
+define block move linear
+N ; linear ; G2 ; x coord ; y coord ; z coord ; azimuth axis ; elevation axis ; feedrate ; M1 ; M2
+end define
+
+integer 12 = 0
+
+#
+
+  define block tool change
+  end define
+
+#
+#
+  define block tool change first
+
+  N ; S Toolspeed[ToolNum] ; M1 3
+ end define
+#
+
+
+define block move circle
+    OP_ =P ; N_ =P ; x coord =S ; y coord =S ;
+    R_ =C ; B_ =S ; C_ =S ; 
+    z coord =S ; G1 =S ; G2 =S ; G3 =S ;
+    G4 =S ; F_ =S ; D_ =S ; M1 =S ; M2 =S
+  #  I_ =S ; J_ =S ; K_ =S
+  end define
+
+   define format (N_ T_ H_)
+   address letter = ''
+   field width = 0
+   address width = 0
+   end define         
+
+
+ 
+ zero = "0"
+ 
+ message output = false
+
+ define block tape start
+    "%"
+    "O0001"
+ end define
+
+
+  define block tape end
+   N_ =P ; M1 30 
+   "%"
+  end define
+
+
+  define codes
+  tool len off  = null -1
+  end define
+  
+  
+ end

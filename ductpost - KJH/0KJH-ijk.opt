@@ -1,0 +1,47 @@
+machine fanucom
+
+#
+  define block tool change
+  end define
+
+#
+
+  define block tool change first
+  end define
+#
+
+
+   define block tape start
+   end define
+   define format (N_ H_)
+   address letter = ''
+   field width = 0
+   address width = 0
+   end define         
+ 
+ zero = "0"
+ 
+ message output = false
+
+ define block tape start
+    "%"
+#    ID_  ProgID
+    N_ =P ; comp off ; G6 49 ; xy plane ; G4 80  
+    N_ =P ; G3 54 
+    N_ =P ; G5 90 ; G1 0 ; z coord FromZ
+    N_ =P ; X_ 0 ; Y_ 0
+ end define
+
+
+  define block tape end
+   N_ =P ; M1 30
+   "%"
+  end define
+
+
+  define codes
+    tool len off  = null -1
+  end define
+
+
+ end

@@ -1,0 +1,186 @@
+machine fanucom
+##4축 테이불 회전축 X 코드 A CENTER
+
+elevation axis units = degrees     
+      
+
+define word AA
+     address letter  = "( File Name= " 
+     address width  = 15
+     field width       = 8
+   end define 
+
+   define word TN 
+     address letter  = " (TOOL " 
+   end define 
+ 
+   define word TD 
+     address letter  = " DIA= " 
+   end define 
+ 
+   define word TR 
+     address letter  = " TIP= " 
+   end define 
+
+   define word TH 
+     address letter  = " TH= " 
+   end define 
+
+   define word TL
+     address letter  = " TL=" 
+   end define 
+
+   define word TOL 
+     address letter  = " TOL= " 
+   end define 
+
+        define format ( AA  )
+                  address width = 15
+                  tape position = 1
+                  field width = 8
+                  leading zeros = false
+        end define
+        define format (TD TR TH  TOL TH TL  ) 
+  		address width = 6
+		field width = 5
+	end define
+ word order = ( +  AA  TN TD TR TL TOL TH   ) 
+  block order        = true 
+
+ ##---------------------------------------------------------------------------  
+ define word NC 
+     address letter  = "( NC= T " 
+  end define 
+define word AR
+     address letter  = " AR= 0 0 0" 
+   end define 
+define word ER
+     address letter  = " ER= 1 0 0" 
+   end define 
+define word AS
+     address letter  = " AS= 0 0 0" 
+   end define 
+define word ES
+     address letter  = " ES= 1 0 0" 
+   end define 
+define word AC
+     address letter  = " AC= 0 0 0 " 
+   end define 
+define word EC
+     address letter  = " EC= 0 0 0" 
+   end define 
+
+
+ define format ( NC AR ER AS ES ER  )
+                  address width = 10
+                  tape position = 1
+                  field width = 0
+ end define
+
+ define format (  AC EC )
+                  address width = 15
+                  tape position = 1
+                  field width = 0
+ end define
+word order = ( +    NC AR ER AS ES AC EC   ) 
+
+##------------------------------------------------------
+
+
+
+azimuth axis parameters = (0. 0. 0. 0. 0. 0.) 
+elevation axis parameters = (0. 0. 0. 1. 0. 0.)   #  ER= 1 0 0 EC=0 0 0
+
+   
+spindle elevation rotation = false 
+elevation axis direction = positive 
+
+define format (A) 
+decimal point = true 
+decimal places = 3 
+end define 
+
+word order = (+ A ) 
+
+define keys 
+elevation axis = A
+## ES= 1 0 0
+end define 
+
+define block move linear 
+N ; G1 ; X ; Y ; Z ; A ; F 
+end define 
+
+define block move rapid 
+N ; G1 ; X ; Y ; Z ; A 
+end define 
+
+
+
+
+
+
+
+
+
+integer 12 = 0
+
+
+
+#
+
+  define block tool change
+  end define
+
+#
+#
+  define block tool change first
+
+  N ; S Toolspeed[ToolNum] ; M1 3
+ end define
+#
+
+
+define block move circle
+    OP_ =P ; N_ =P ; x coord =S ; y coord =S ;
+    R_ =C ; B_ =S ; C_ =S ; 
+    z coord =S ; G1 =S ; G2 =S ; G3 =S ;
+    G4 =S ; F_ =S ; D_ =S ; M1 =S ; M2 =S
+  #  I_ =S ; J_ =S ; K_ =S
+  end define
+
+   define format (N_ T_ H_)
+   address letter = ''
+   field width = 0
+   address width = 0
+   end define         
+
+
+ 
+ zero = "0"
+ 
+ message output = false
+
+ define block tape start
+    "%"
+    "O0001"
+   AA Jobname ; EM =C
+   N ; "( TOOL TYPE  " ; " : " ; TD (ToolRadius[ToolNum] * 2)   ; TR TipRadius[ToolNum] ; TL Toollength[ToolNum] ;
+                                        TH Thickness[ToolNum] ;  TOL Tolerance[ToolNum] ; "  )" 
+   N ; NC " "  ; AR " " ; ER " "  ; AS " " ; ES " " ; AC " " ; EC " "  ; " )"    
+
+ end define
+
+
+  define block tape end
+   N_ =P ; M1 30 
+   "%"
+  end define
+
+
+  define codes
+  tool len off  = null -1
+  end define
+  
+  
+ end

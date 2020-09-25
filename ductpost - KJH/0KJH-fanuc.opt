@@ -1,0 +1,156 @@
+machine fanuc 
+#2 
+#   History 
+#   Option for North American Support 
+
+#9 
+   define word TN 
+     address letter  = " (TOOL " 
+     address width  = 7 
+     field width       = 2 
+   end define 
+# 
+   define word TD 
+     address letter  = " Dia. " 
+     address width  = 6 
+     field width      = 6 
+     scale factor    = 2 
+   end define 
+# 
+   define word TR 
+     address letter  = " Tip Rad. " 
+     address width  = 10 
+     field width       = 5 
+   end define 
+# 
+   define word ID2 
+     address letter  = "(FANUC"
+     address width   = 23
+     field width     = 25
+   end define 
+# 
+   define word ID3 
+     address letter  = "(FOR- " 
+     address width   = 6 
+     field width     = 12 
+   end define 
+# 
+   define word ID4 
+     address letter  = "(PART NAME- " 
+     address width   = 12 
+     field width     = 6 
+   end define 
+# 
+   define word ID5 
+     address letter  = "(OPERATOR- " 
+     address width   = 13 
+     field width     = 3 
+   end define 
+# 
+   define word %M 
+     address letter  = "(DATA :-" 
+     address width   = 18 
+     field width     = 2 
+   end define 
+# 
+   define word %D 
+     address letter  = " / " 
+     address width   = 3 
+     field width     = 2 
+   end define 
+# 
+   define word %Y 
+     address letter  = " / " 
+     address width   = 3 
+     field width     = 2 
+   end define 
+# 
+  define format ( TD  TR ) 
+    metric formats 
+    decimal point    = true 
+    decimal places   = 3 
+    leading zeros    = false 
+    trailing zeros   = false 
+    imperial formats = metric formats 
+  end define 
+# 
+   define format ( N ) 
+     not permanent 
+   end define 
+# 
+   define format ( ID ) 
+    address letter = "O" 
+   end define 
+# 
+   define format ( M1 M2 ) 
+     field width  = 4 
+   end define 
+# 
+   define format ( F ) 
+     imperial formats 
+     decimal point  = true 
+     decimal places = 1 
+   end define 
+# 
+   word order = ( + ID2 ID3 ID4 ID5 %M %D %Y TN TD TR ) 
+# 
+   define codes 
+     spin coolant on cw    =  M1 13 
+     spin coolant on ccw  =  M1 14 
+     spin coolant off         =  M1 05 
+     coolant on mist         =  M1 50 
+     coolant on                 =  M1 08 
+     coolant on flood        =  M1 50 
+     coolant off                =  M1 09 
+    end define 
+# 
+   message output = false 
+   integer 12         = 0
+   units                 = input 
+   use progid         = true 
+   block order        = true 
+# 
+  define block tape start 
+    "%" 
+    N ; "O0000"
+    ID4 PartID ; EM =C 
+   %M Month ; %D Day ; %Y Year ; ")" 
+    N ; xy plane ; "G80G49" ; compensation off ; absolute data ; G6   
+  end define 
+# 
+  define block tool change first
+    N ; "G91G28Z0."
+    N ;  M1 06  ; tool number ToolNumber ; TN  ToolNumber  ; TR TipRadius[ToolNum] ; EM =C
+    N ; "G05.1Q0"
+    N ; "G05.1Q1"
+    N ; "G90G54G0X0.Y0." ; spindle ToolSpeed[ToolNum] ;  M1 3 
+    N ; "G43Z100." ; H ToolNum
+  end define 
+# 
+  define block tool change 
+    N ; "M9"
+    N ; "G91G28Z0.M5"
+    N ; "M01"
+    N ;  M1 06  ; tool number ToolNumber ; TN  ToolNumber ; TD ToolRadius[ToolNum]  ; EM =C 
+    N ; "G05.1Q0"
+    N ; "G05.1Q1"
+    N ; "G90G54G0X0.Y0." ; spindle ToolSpeed[ToolNum] ;  M1 3 
+    N ; "G43Z100." ; H ToolNum
+  end define 
+#
+  define block move rapid
+    N ; G1 ; G2 ; X ; Y ; Z ; M1 ; M2
+  end define
+#
+  define block move linear 
+    N ; linear ; G2 ; x coord ; y coord ; z coord ; tool radius ; feedrate ; M1 ; M2 
+  end define 
+# 
+  define block tape end 
+    N ; "G0Z100.M5"
+    N ; "G91G28Y0.Z0.M9"
+    N ; "M30"
+   "%" 
+  end define 
+# 
+end
