@@ -1,0 +1,66 @@
+<?xml version="1.0" ?>
+
+
+<!-- Example of 5-axis Table-Table configuration -->
+<!-- Table static apart from rotary motion, Head moves in X, Y & Z -->
+<!-- Both rotary axes on table controlled by A & B -->
+<!-- Note the restricted movement on A axis -->
+
+
+<machine xmlns="x-schema:PowermillMachineTool">
+
+  <!-- Where things are attached to the machine -->
+  <table_attach_point PART="table" X="0" Y="0" Z="0" />
+  <head_attach_point PART="head" X="0" Y="0" Z="150" I="0" J="0" K="1" />
+
+  <!-- The head -->
+  <machine_part>
+    <axis>
+	      <control_info ADDRESS="Y" />
+      <simple_linear I="0" J="1" K="0" />
+    </axis>
+	<model_list>
+          <dmt_file>
+            <path FILE="0KJH machine parts/Y-colm.dmt" />
+            <rgb R="200" G="200" B="200" />
+          </dmt_file>
+    </model_list>
+    <machine_part>
+      <axis>
+        <control_info ADDRESS="X" />
+        <simple_linear I="1" J="0" K="0" />
+      </axis>
+	  <model_list>
+          <dmt_file>
+            <path FILE="0KJH machine parts/X-colm.dmt" />
+            <rgb R="255" G="255" B="255" />
+          </dmt_file>
+        </model_list>
+      <machine_part>
+        <axis>
+          <control_info ADDRESS="Z" VALUE="87" />
+          <simple_linear I="0" J="0" K="1" />
+        </axis>
+        <model_list>
+          <dmt_file>
+            <path FILE="0KJH machine parts/Z-colm.dmt" />
+            <rgb R="200" G="200" B="200" />
+          </dmt_file>
+        </model_list>
+        <machine_part NAME="head" />
+      </machine_part>
+    </machine_part>
+  </machine_part>
+
+  <!-- The table -->
+ <machine_part>
+	<model_list>
+          <dmt_file>
+            <path FILE="0KJH machine parts/base.dmt" />
+            <rgb R="200" G="200" B="200" />
+          </dmt_file>
+    </model_list>
+         <machine_part NAME="table"/>
+  </machine_part>
+  
+</machine>
